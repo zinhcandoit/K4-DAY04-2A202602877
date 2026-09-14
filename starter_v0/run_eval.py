@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -270,6 +271,8 @@ def main() -> None:
     parser.add_argument("--tools", type=Path, default=ARTIFACTS_DIR / "tools.yaml")
     parser.add_argument("--eval-cases", type=Path, default=DATA_DIR / "eval_base.json")
     parser.add_argument("--runs-dir", type=Path, default=ROOT / "runs")
+    parser.add_argument("--delay", type=int, default=13, help="Seconds to wait between cases (default: 13 for Gemini free tier).")
+    parser.add_argument("--retries", type=int, default=3, help="Max retries per case on 503/429 errors (default: 3).")
     args = parser.parse_args()
 
     system_prompt = args.system_prompt.read_text(encoding="utf-8")
@@ -285,30 +288,49 @@ def main() -> None:
     validate_expected_tools(cases, tool_declarations, args.eval_cases)
     openai_tools = to_openai_tools(tool_declarations)
 
+    delay_between = getattr(args, "delay", 0)
+    max_retries = getattr(args, "retries", 3)
+
     results: list[dict[str, Any]] = []
-    for case in cases:
+    for case_idx, case in enumerate(cases):
+        if case_idx > 0 and delay_between > 0:
+            print(f"  Waiting {delay_between}s before next case...", flush=True)
+            time.sleep(delay_between)
         print(f"Running {case['id']}...", flush=True)
         agent = HelpdeskAgent(provider, system_prompt=system_prompt, tools=openai_tools, model=args.model)
-        try:
-            tool_choice = None if case["expect"].get("no_tool") else "required"
-            run = agent.run(case_messages(case), tool_choice=tool_choice)
-            calls = [{"name": call.name, "args": call.args} for call in run.tool_calls]
-            result = evaluate_phase_b(case, calls, run.text)
-            tool_results = run.tool_results
-        except Exception as exc:
-            calls = []
-            tool_results = []
-            result = {
-                "passed": False,
-                "failure_type": "provider_error",
-                "case_failure_type": case.get("failure_type"),
-                "observed_mismatch": "provider_error",
-                "failures": [f"{type(exc).__name__}: {str(exc)}"],
-                "actual_tool_calls": [],
-                "actual_text": None,
-                "routing_correct": False,
-                "args_correct": False,
-            }
+        calls = []
+        tool_results = []
+        result = None
+        for attempt in range(max_retries + 1):
+            try:
+                tool_choice = None if case["expect"].get("no_tool") else "required"
+                run = agent.run(case_messages(case), tool_choice=tool_choice)
+                calls = [{"name": call.name, "args": call.args} for call in run.tool_calls]
+                result = evaluate_phase_b(case, calls, run.text)
+                tool_results = run.tool_results
+                break
+            except Exception as exc:
+                err_str = str(exc)
+                is_retryable = "503" in err_str or "429" in err_str or "UNAVAILABLE" in err_str or "RESOURCE_EXHAUSTED" in err_str
+                if is_retryable and attempt < max_retries:
+                    wait = 15 * (attempt + 1)
+                    print(f"  [{case['id']}] Attempt {attempt+1} failed ({type(exc).__name__}). Retrying in {wait}s...", flush=True)
+                    time.sleep(wait)
+                    continue
+                calls = []
+                tool_results = []
+                result = {
+                    "passed": False,
+                    "failure_type": "provider_error",
+                    "case_failure_type": case.get("failure_type"),
+                    "observed_mismatch": "provider_error",
+                    "failures": [f"{type(exc).__name__}: {err_str}"],
+                    "actual_tool_calls": [],
+                    "actual_text": None,
+                    "routing_correct": False,
+                    "args_correct": False,
+                }
+                break
         results.append({
             "id": case["id"],
             "phase": case["phase"],
