@@ -18,7 +18,7 @@ tools:
       required: [question]
 
   - name: search_kb
-    description: "Tìm hướng dẫn hỗ trợ kỹ thuật."
+    description: "Tìm hướng dẫn hỗ trợ kỹ thuật. Khi yêu cầu thuộc một nhóm rõ ràng như email hoặc Wi-Fi, luôn truyền category cụ thể thay vì dựa vào default all."
     parameters:
       type: object
       properties:
@@ -28,7 +28,7 @@ tools:
       required: [query]
 
   - name: check_service_status
-    description: "Kiểm tra trạng thái một dịch vụ."
+    description: "Kiểm tra trạng thái shared service của công ty như VPN, email, SSO, Wi-Fi hoặc printing; không dùng cho một thiết bị cụ thể."
     parameters:
       type: object
       properties:
@@ -37,7 +37,7 @@ tools:
       required: [service]
 
   - name: inspect_device
-    description: "Kiểm tra thông tin và chẩn đoán thiết bị."
+    description: "Kiểm tra inventory và diagnostic của một thiết bị/asset cụ thể; chỉ dùng khi có asset_id, không dùng cho shared service hoặc user lookup. Luôn truyền check cụ thể như all, vpn hoặc network theo yêu cầu thay vì bỏ qua argument."
     parameters:
       type: object
       properties:
@@ -46,7 +46,7 @@ tools:
       required: [asset_id]
 
   - name: lookup_user
-    description: "Tra cứu người dùng trong danh bạ hỗ trợ."
+    description: "Tra cứu một employee trong directory bằng employee_id; không tự gọi inspect_device nếu người dùng chưa yêu cầu asset cụ thể."
     parameters:
       type: object
       properties:
