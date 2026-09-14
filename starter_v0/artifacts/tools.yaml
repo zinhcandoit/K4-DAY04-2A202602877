@@ -96,7 +96,7 @@ tools:
       required: [query]
 
   - name: create_ticket
-    description: "Tạo một ticket hỗ trợ."
+    description: "Tạo một ticket hỗ trợ. Đây là hành động ghi dữ liệu — chỉ gọi sau khi người dùng đã xác nhận rõ ràng qua hội thoại."
     parameters:
       type: object
       properties:
