@@ -1,5 +1,5 @@
 {
-  "dataset_id": "day04_v3_helpdesk_group",
+  "dataset_id": "day04_v3_helpdesk_group_optimized",
   "dataset_role": "group",
   "description": "Team-authored eval cases for the IT Helpdesk Agent. 5 single-turn and 5 multi-turn cases covering core helpdesk skills plus the bonus meeting_room_status tool.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
