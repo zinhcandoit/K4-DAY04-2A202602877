@@ -78,37 +78,6 @@ Nên phân biệt:
 
 Các lỗi này không nhất thiết có cùng cách sửa.
 
-GIẢI PHẪU MỘT THẤT BẠI TOOL CALLING Trace Review
-
-User: "VPN dạo này chậm thế, có sự cố gì không?"
-
-❌ Thất bại v0 (Hallucinated Identifier):
-Action: inspect_device({"asset_id": "LT-001", "check": "vpn"})
-Observation: {"error": "asset LT-001 not found"}
-Root Cause: Model tự bịa ID máy cá nhân thay vì check dịch vụ dùng chung!
-
-✅ Kỳ vọng đúng (Shared Service Routing):
-Action: check_service_status({"service": "vpn", "environment": "production"})
-Observation: {"status": "degraded", "issue": "Gateway high latency"}
-Final Reply: "Dịch vụ VPN production đang bị chậm do Gateway quá tải..."
-
-Sửa ở Prompt hay Schema?
-
-1. tools.yaml: Mô tả rõ check_service_status dành cho hệ thống toàn công ty (VPN, WiFi, Email), còn inspect_device chỉ dùng khi có mã tài sản cụ thể.
-
-2. system_prompt.md: Bổ sung nguyên tắc cấm đoán mò: "Tuyệt đối không tự bịa mã tài sản (LT-xxx) hoặc mã nhân viên (EMP-xxx)."
-
-Cach sua:
-Phiên bản v1: Routing
-
-Phân định ranh giới rõ giữa check_service_status, inspect_device, search_kb và lookup_user.
-Phiên bản v2: Arguments
-
-Chuẩn hóa enums (vd: check: [all, vpn, network]), bắt buộc trích xuất đúng category và environment (production vs staging).
-Phiên bản v3: Context & Clarify
-
-Hỏi lại khi thiếu ID (gọi clarify), xử lý multi-turn carry-over và chuyển đổi template báo cáo sự cố.
-
 ## 5. Chọn nơi sửa phù hợp
 
 Gợi ý sửa system prompt khi vấn đề là nguyên tắc toàn cục, ví dụ:

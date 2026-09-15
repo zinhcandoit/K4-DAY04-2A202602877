@@ -3,7 +3,8 @@
 ## Team
 
 - Team: K4-DAY04-2A202602877
-- Members: Vũ Hiếu Thiên
+- Members: Thiều Quang Vinh, Hoàng Bích Ngọc, Lê Tuấn Hưng, Đỗ Trịnh Huy Hoàng
+  , Vũ Hiếu Thiên.
 - Provider/model: GPT-4o-mini
 
 # PHẦN A — Giới thiệu agent
