@@ -225,7 +225,10 @@ có thể đối chiếu đóng góp.
   - `starter_v0/artifacts/version_log.csv`
   - `starter_v0/artifacts/case_eval_evidence.md`
   - `starter_v0/data/eval_group.json`
-- **Commit hash hoặc pull request:** [commit hash sau khi commit]
+- **Commit hash hoặc pull request:** 
+  - `3487762` — `v5: fix routing boundary, argument extraction, bonus tools, eval cases`
+  - `3e3dbbb` — `chore: finalize LAB-GUIDE and REPORT team members`
+  - `abe4191` — `chore(report): integrate group reflection from main into C1`
 - **Một quyết định kỹ thuật bạn đã đưa ra và lý do:**
   - Chọn `diagnose_network` làm bonus tool (thay vì approved_software_catalog) vì data sẵn có trong `assets.json`, không cần external API. Tool 100% deterministic, read-only.
   - Phân định ranh giới `inspect_device` (single-component check) vs `diagnose_network` (multi-check network diagnostics) — root cause của 2 failures (H05, M08).
