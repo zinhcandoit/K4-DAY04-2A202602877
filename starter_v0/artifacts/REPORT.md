@@ -124,7 +124,26 @@ evidence thực tế trong repository, không chỉ mô tả cảm nhận chung.
 
 **Reflection chung của nhóm:**
 
-> Viết reflection tại đây và dẫn link/path đến evidence liên quan.
+1. **Mục tiêu đã hoàn thành:**
+   Nhóm đã tối ưu `system_prompt.md` qua 4 phiên bản ([version_log.csv](version_log.csv)), nâng accuracy từ 70% lên 100%:
+   - **v1**: Định tuyến đúng yêu cầu nhân sự qua `lookup_user`, chặn việc lấy employee ID làm asset ID đưa vào `inspect_device` (tăng lên 73.33%).
+   - **v2**: Ánh xạ đúng loại lỗi (`vpn`, `network`, `hardware`...) vào tham số `check` của `inspect_device`, không còn gọi bừa `check="all"` (tăng lên 80%).
+   - **v3**: Cấm tự đoán mã ID hoặc môi trường bị thiếu (bắt buộc dùng `clarify`); bắt buộc xin xác nhận trước khi gọi tool ghi `create_ticket` (tăng lên 100%).
+
+2. **Cải thiện rõ nhất:**
+   Bước nhảy từ v2 lên v3 (+20%) mang lại hiệu quả lớn nhất. Việc chặn mô hình tự suy diễn thông tin thiếu và dựng rào chắn xác nhận tươi (fresh confirmation) trước khi tạo ticket đã giải quyết triệt để các ca lỗi nghiêm trọng nhất.
+
+3. **Failure quan trọng chưa xử lý hoàn toàn:**
+   - Khi câu hỏi quá mơ hồ (ví dụ *"mạng có vấn đề"*), mô hình chưa chủ động hỏi dạng trắc nghiệm để phân định giữa lỗi máy cá nhân hay sự cố mạng chung.
+   - Khi người dùng yêu cầu tra cứu ngoài kèm mã máy nội bộ, mô hình chưa biết dừng lại xin phép trước khi gửi dữ liệu ra ngoài.
+   - Tra cứu sự cố diện rộng đôi khi vẫn fallback về policy `"all"` thay vì vào đúng nhóm chính sách liên quan.
+
+4. **Phân chia và tích hợp công việc:**
+   Nhóm 5 người chia việc theo [TEAMMATES.md](../../TEAMMATES.md) (Vinh quản lý repo & git, Hưng tune prompt/tool, Ngọc làm eval set, Hoàng test UI, Thiên làm report). Mỗi người làm trên branch `contrib/<username>`, tự test local xong đẩy lên để các bạn khác pull về test chéo, nhóm trưởng duyệt diff rồi merge vào `main`.
+
+5. **Nếu có thêm vòng lặp:**
+   Nhóm sẽ ưu tiên viết lại phần description trong [tools.yaml](tools.yaml) (nêu rõ input/output và điều kiện khi nào cần gọi) thay vì nhét quá nhiều quy tắc vào prompt, giúp prompt gọn gàng và mô hình chọn tool chuẩn xác hơn.
+
 
 ## C2. Self-reflection của từng thành viên
 
