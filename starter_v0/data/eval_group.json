@@ -1,7 +1,7 @@
 {
-  "dataset_id": "day04_v3_helpdesk_group_optimized",
+  "dataset_id": "day04_v3_helpdesk_group",
   "dataset_role": "group",
-  "description": "Team-authored eval cases for the IT Helpdesk Agent. 5 single-turn and 5 multi-turn cases covering core helpdesk skills plus the bonus meeting_room_status tool.",
+  "description": "Team-authored eval cases for the IT Helpdesk Agent. 5 single-turn and 5 multi-turn cases covering core helpdesk skills (routing, arguments, multi-turn, confirmation, safety boundaries).",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
   "cases": [
     {
@@ -185,89 +185,6 @@
         "skill": "policy_application",
         "difficulty": "medium",
         "what_it_tests": "Áp dụng policy_area phù hợp với câu hỏi."
-      }
-    },
-    {
-      "id": "B01_meeting_room_status",
-      "phase": "B",
-      "suite": "group",
-      "query": "Kiểm tra trạng thái phòng họp RM-501.",
-      "failure_type": "wrong_tool",
-      "expect": {
-        "tool_calls": [
-          {"name": "meeting_room_status", "args": {"room_id": "RM-501"}}
-        ]
-      },
-      "metadata": {
-        "skill": "meeting_room_diagnosis",
-        "difficulty": "medium",
-        "what_it_tests": "Kiểm tra trạng thái đầy đủ của phòng họp RM-501."
-      }
-    },
-    {
-      "id": "B02_meeting_room_status_invalid",
-      "phase": "B",
-      "suite": "group",
-      "query": "Kiểm tra phòng họp PHONG-A.",
-      "failure_type": "wrong_arg_value",
-      "expect": {
-        "no_tool": true,
-        "behavior": "refuse"
-      },
-      "metadata": {
-        "skill": "meeting_room_validation",
-        "difficulty": "easy",
-        "what_it_tests": "Phát hiện room_id không đúng format RM-XXX và từ chối gọi tool."
-      }
-    },
-    {
-"id": "B03_diagnose_network",
-      "phase": "B",
-      "suite": "group",
-      "query": "Chẩn mạng chi tiết cho LT-204.",
-      "failure_type": "wrong_tool",
-      "expect": {
-        "tool_calls": [
-          {"name": "diagnose_network", "args": {"asset_id": "LT-204"}}
-        ]
-      },
-      "metadata": {
-        "skill": "network_diagnosis",
-        "difficulty": "medium",
-        "what_it_tests": "Kiểm tra chẩn đoán mạng chi tiết (ping, DNS, VPN, gateway) cho LT-204."
-      }
-    },
-    {
-      "id": "B04_diagnose_network_partial",
-      "phase": "B",
-      "suite": "group",
-      "query": "Chỉ kiểm tra ping và DNS cho DT-031.",
-      "failure_type": "wrong_tool",
-      "expect": {
-        "tool_calls": [
-          {"name": "diagnose_network", "args": {"asset_id": "DT-031", "checks": "ping,dns"}}
-        ]
-      },
-      "metadata": {
-        "skill": "network_diagnosis_partial",
-        "difficulty": "easy",
-        "what_it_tests": "Kiểm tra chẩn đoán mạng chỉ với ping và DNS cho DT-031."
-      }
-    },
-    {
-      "id": "B05_diagnose_network_invalid",
-      "phase": "B",
-      "suite": "group",
-      "query": "Chẩn đoán mạng cho MY-LAPTOP.",
-      "failure_type": "wrong_arg_value",
-      "expect": {
-        "no_tool": true,
-        "behavior": "refuse"
-      },
-      "metadata": {
-        "skill": "network_diagnosis_validation",
-        "difficulty": "easy",
-        "what_it_tests": "Phát hiện asset_id không đúng format LT-XXX/DT-XXX và từ chối gọi tool."
       }
     }
   ]
