@@ -56,6 +56,6 @@ git log --format="%h | %an <%ae> | %s"
 | 1 | Thiều Quang Vinh | 2A202602877 | `zinhcandoit` | `8dc876b` | `report(reflect): add reflection for group (khởi tạo TEAMMATES.md và hoàn thiện reflection nhóm)` |
 | 2 | Đỗ Trịnh Huy Hoàng | 2A202602392 | `HuyHoang1977` | `a154332` | `Add Streamlit helpdesk demo UI (phát triển streamlit_app.py và cập nhật requirements.txt)` |
 | 3 | Hoàng Bích Ngọc | 2A202602677 | `Ngocngoc12` | `50641c9` | `feat(eval): thiết kế 10 test cases trong eval_group.json` |
-| 4 | Vũ Hiếu Thiên | 2A202602867 | `Soraishiro` |  |  |
+| 4 | Vũ Hiếu Thiên | 2A202602867 | `Soraishiro` | `3487762, abe4191, 1978849` | `v5: fix routing boundary...`, `integrate group reflection`, `separate eval_bonus.json, clean .env/tickets` |
 | 5 | Lê Tuấn Hưng | 2A202602665 | `Justroamming` | `755679c` | `feat(chu trình tối ưu khoa học V1,V2,V3): Hoàn thành việc nêu hypothesis, sửa file, và chạy eval suite 30/30 pass test case` |
 
