@@ -13,7 +13,7 @@
 | 1 | Thiều Quang Vinh | 2A202602877 | zinhcandoit | `main` / `contrib/zinhcandoit` | Trưởng nhóm, Version control & Quản trị repository |
 | 2 | Đỗ Trịnh Huy Hoàng | 2A202602392 | HuyHoang1977 | `contrib/HuyHoang1977` | Phát triển giao diện người dùng (UI) |
 | 3 | Hoàng Bích Ngọc | 2A202602766 | Ngocngoc12 | `contrib/Ngocngoc12` | Thiết kế bộ đánh giá nhóm (Group eval set) |
-| 4 | Vũ Hiếu Thiên | 2A202602867 | Soraishiro | `contrib/Soraishiro` | Tổng hợp và biên soạn báo cáo (Report) |
+| 4 | Vũ Hiếu Thiên | 2A202602867 | Soraishiro | `contrib/Soraishiro` | Tool & Schema Engineer / Eval & Red-Team / Security & Bonus Tool / Report |
 | 5 | Lê Tuấn Hưng | 2A202602665 | Justroamming | `contrib/Justroamming` | Tinh chỉnh Prompt, Tool schema & Version log |
 
 ## 3. Phân công nhiệm vụ chi tiết
@@ -39,9 +39,13 @@
 - **Trải nghiệm người dùng:** Tối ưu hóa phản hồi của agent trên giao diện, hỗ trợ hiển thị artifact version và hash kiểm tra.
 
 ### 5. Vũ Hiếu Thiên
-- **Biên soạn Báo cáo (Report):** Hoàn thiện nội dung chi tiết trong `starter_v0/artifacts/REPORT.md` (Phần A và Phần B).
-- **Phân tích lỗi (Failure Analysis):** Tổng hợp và phân tích nguyên nhân các trường hợp thất bại ở mục B2, ghi nhận hướng khắc phục và các limitation.
-- **Thu thập Evidence:** Ghi nhận số liệu Version evidence (B1), trích xuất Live chat transcripts (B4) và phân tích tối thiểu 3 case Adversarial testing (B4a).
+- **Tạo Bonus Tools (2 tools hoàn chỉnh):** `meeting_room_status` & `diagnose_network` — code, TOOL.md, schema, `__init__.py`, register vào `tools.yaml` & `tools/__init__.py` (commit `3487762`)
+- **System Prompt Engineering (v1→v6):** Refactor hoàn toàn `system_prompt.md` thành 6 sections (Confirmation, No-Guessing, Invalid Format, Safety, Routing, Arguments); fix routing boundary `inspect_device` vs `diagnose_network`; argument extraction rules; confirmation single-use; invalid format → immediate refuse; user-initiated confirmation flow (fix E05/E08/B02/B05)
+- **Tools.yaml Overhaul:** Thêm schema 2 bonus tools, làm rõ boundary, mapping policy_area (configuration→service_operations), argument extraction hints (check mapping: pin/battery→hardware)
+- **Eval Set Design:** Thiết kế 10 cases G01-G10 trong `eval_group.json` (5 single-turn, 5 multi-turn) bao phủ ambiguous intent, missing identifier, stale confirmation, cancellation, parallel calls, external boundary; Tách 5 bonus cases B01-B05 ra `eval_bonus.json` riêng
+- **Adversarial Suite (12 cases A01-A12):** Stale confirmation, role spoofing, forged tool results, argument smuggling, sensitive data, injection probes, external ID smuggling
+- **Evidence & Reporting:** `case_eval_evidence.md` (mapping 67 cases), B4 Live chat evidence (28 scenarios), B4a Adversarial analysis, version_log.csv tracking, REPORT.md (Phần A, B, C)
+- **Security Hardening & Cleanup:** Fix H04/H17/M06 routing, E05/E08 confirmation, B02/B05 invalid format refuse, A10/A11 attacks blocked; Clean `.env`, `tickets/` leakage; Restore eval_group.json 10 cases
 
 ## 4. Bảng đối chiếu commit đóng góp
 
@@ -56,6 +60,6 @@ git log --format="%h | %an <%ae> | %s"
 | 1 | Thiều Quang Vinh | 2A202602877 | `zinhcandoit` | `8dc876b` | `report(reflect): add reflection for group (khởi tạo TEAMMATES.md và hoàn thiện reflection nhóm)` |
 | 2 | Đỗ Trịnh Huy Hoàng | 2A202602392 | `HuyHoang1977` | `a154332` | `Add Streamlit helpdesk demo UI (phát triển streamlit_app.py và cập nhật requirements.txt)` |
 | 3 | Hoàng Bích Ngọc | 2A202602677 | `Ngocngoc12` | `50641c9` | `feat(eval): thiết kế 10 test cases trong eval_group.json` |
-| 4 | Vũ Hiếu Thiên | 2A202602867 | `Soraishiro` | `3487762, abe4191, 1978849` | `v5: fix routing boundary...`, `integrate group reflection`, `separate eval_bonus.json, clean .env/tickets` |
+| 4 | Vũ Hiếu Thiên | 2A202602867 | `Soraishiro` | `3487762` `abe4191` `1978849` `f35e230` | `v5: fix routing boundary, bonus tools, eval cases`; `integrate group reflection`; `separate eval_bonus.json, clean .env/tickets`; `update self-reflection` |
 | 5 | Lê Tuấn Hưng | 2A202602665 | `Justroamming` | `755679c` | `feat(chu trình tối ưu khoa học V1,V2,V3): Hoàn thành việc nêu hypothesis, sửa file, và chạy eval suite 30/30 pass test case` |
 
