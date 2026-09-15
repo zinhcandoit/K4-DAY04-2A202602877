@@ -1,7 +1,274 @@
 {
   "dataset_id": "day04_v3_helpdesk_group",
   "dataset_role": "group",
-  "description": "Template intentionally left empty. The team must write exactly 10 original IT helpdesk cases: 5 single-turn query cases and 5 multi-turn turns cases.",
+  "description": "Team-authored eval cases for the IT Helpdesk Agent. 5 single-turn and 5 multi-turn cases covering core helpdesk skills plus the bonus meeting_room_status tool.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_ambiguous_intent_device_vs_service",
+      "phase": "B",
+      "suite": "group",
+      "query": "Mình cần kiểm tra thiết bị hoặc dịch vụ mạng, nhưng chưa chắc muốn gì.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {"name": "clarify", "args": {"response_type": "choice"}}
+        ]
+      },
+      "metadata": {
+        "skill": "ambiguous_intent",
+        "difficulty": "medium",
+        "what_it_tests": "Phân biệt giữa thiết bị cá nhân (cần asset_id) và dịch vụ chung (VPN/Wi-Fi)."
+      }
+    },
+    {
+      "id": "G02_missing_asset_identifier",
+      "phase": "B",
+      "suite": "group",
+      "query": "Kiểm tra Wi-Fi trên laptop của mình.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {"name": "clarify", "args": {"response_type": "text"}}
+        ]
+      },
+      "metadata": {
+        "skill": "missing_identifier",
+        "difficulty": "medium",
+        "what_it_tests": "Thiếu asset_id phải hỏi lại, không tự đoán."
+      }
+    },
+    {
+      "id": "G03_compare_two_environments",
+      "phase": "B",
+      "suite": "group",
+      "query": "So sánh trạng thái email giữa production và staging.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "check_service_status", "args": {"service": "email", "environment": "production"}},
+          {"name": "check_service_status", "args": {"service": "email", "environment": "staging"}}
+        ]
+      },
+      "metadata": {
+        "skill": "multi_call_comparison",
+        "difficulty": "medium",
+        "what_it_tests": "Gọi cùng tool hai lần với environment khác nhau."
+      }
+    },
+    {
+      "id": "G04_compare_two_assets",
+      "phase": "B",
+      "suite": "group",
+      "query": "So sánh pin và phần cứng của LT-204 và LT-240.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "inspect_device", "args": {"asset_id": "LT-204", "check": "hardware"}},
+          {"name": "inspect_device", "args": {"asset_id": "LT-240", "check": "hardware"}}
+        ]
+      },
+      "metadata": {
+        "skill": "multi_call_assets",
+        "difficulty": "medium",
+        "what_it_tests": "Gọi inspect_device hai lần với asset_id khác nhau."
+      }
+    },
+    {
+      "id": "G05_format_only_no_refetch",
+      "phase": "B",
+      "suite": "group",
+      "query": "Trình bày findings VPN AUTH_TIMEOUT và service degraded thành báo cáo handoff.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "format_incident_report", "args": {"template": "handoff"}}
+        ]
+      },
+      "metadata": {
+        "skill": "format_only",
+        "difficulty": "easy",
+        "what_it_tests": "Chỉ format findings có sẵn, không gọi tool thu thập lại."
+      }
+    },
+    {
+      "id": "G06_correct_asset_turn",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Kiểm tra bảo mật máy LT-204."},
+        {"role": "user", "content": "À nhầm, máy LT-240."},
+        {"role": "user", "content": "Giữ check security nhé."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {"name": "inspect_device", "args": {"asset_id": "LT-240", "check": "security"}}
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_correction",
+        "difficulty": "hard",
+        "what_it_tests": "Dùng giá trị mới nhất trong multi-turn."
+      }
+    },
+    {
+      "id": "G07_cancel_before_action",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tạo ticket critical cho lỗi VPN trên LT-204."},
+        {"role": "user", "content": "À không, đừng tạo ticket, chỉ báo cho mình biết trạng thái VPN production."}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "check_service_status", "args": {"service": "vpn", "environment": "production"}}
+        ]
+      },
+      "metadata": {
+        "skill": "cancellation",
+        "difficulty": "hard",
+        "what_it_tests": "Intent thay đổi hoàn toàn, bỏ qua turn trước."
+      }
+    },
+    {
+      "id": "G08_stale_confirmation_rejected",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tạo ticket medium cho lỗi Wi-Fi trên LT-204."},
+        {"role": "user", "content": "Có, tạo đi."},
+        {"role": "user", "content": "Thay thành ticket critical cho lỗi email trên LT-240."}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {"name": "clarify", "args": {"response_type": "yes_no"}}
+        ]
+      },
+      "metadata": {
+        "skill": "stale_confirmation",
+        "difficulty": "hard",
+        "what_it_tests": "Confirmation cũ không áp dụng khi payload thay đổi."
+      }
+    },
+    {
+      "id": "G09_external_internal_boundary",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm thông tin công khai về laptop LT-204 trên web.",
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {"name": "clarify", "args": {"response_type": "text"}}
+        ]
+      },
+      "metadata": {
+        "skill": "external_boundary",
+        "difficulty": "medium",
+        "what_it_tests": "Không gửi internal identifier ra external tool."
+      }
+    },
+    {
+      "id": "G10_policy_priority_mapping",
+      "phase": "B",
+      "suite": "group",
+      "query": "Theo policy, khi outage toàn công ty thì priority là gì?",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "policy", "args": {"policy_area": "incident_response"}}
+        ]
+      },
+      "metadata": {
+        "skill": "policy_application",
+        "difficulty": "medium",
+        "what_it_tests": "Áp dụng policy_area phù hợp với câu hỏi."
+      }
+    },
+    {
+      "id": "B01_meeting_room_status",
+      "phase": "B",
+      "suite": "group",
+      "query": "Kiểm tra trạng thái phòng họp RM-501.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "meeting_room_status", "args": {"room_id": "RM-501"}}
+        ]
+      },
+      "metadata": {
+        "skill": "meeting_room_diagnosis",
+        "difficulty": "medium",
+        "what_it_tests": "Kiểm tra trạng thái đầy đủ của phòng họp RM-501."
+      }
+    },
+    {
+      "id": "B02_meeting_room_status_invalid",
+      "phase": "B",
+      "suite": "group",
+      "query": "Kiểm tra phòng họp PHONG-A.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "metadata": {
+        "skill": "meeting_room_validation",
+        "difficulty": "easy",
+        "what_it_tests": "Phát hiện room_id không đúng format RM-XXX và từ chối gọi tool."
+      }
+    },
+    {
+"id": "B03_diagnose_network",
+      "phase": "B",
+      "suite": "group",
+      "query": "Chẩn mạng chi tiết cho LT-204.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "diagnose_network", "args": {"asset_id": "LT-204"}}
+        ]
+      },
+      "metadata": {
+        "skill": "network_diagnosis",
+        "difficulty": "medium",
+        "what_it_tests": "Kiểm tra chẩn đoán mạng chi tiết (ping, DNS, VPN, gateway) cho LT-204."
+      }
+    },
+    {
+      "id": "B04_diagnose_network_partial",
+      "phase": "B",
+      "suite": "group",
+      "query": "Chỉ kiểm tra ping và DNS cho DT-031.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "diagnose_network", "args": {"asset_id": "DT-031", "checks": "ping,dns"}}
+        ]
+      },
+      "metadata": {
+        "skill": "network_diagnosis_partial",
+        "difficulty": "easy",
+        "what_it_tests": "Kiểm tra chẩn đoán mạng chỉ với ping và DNS cho DT-031."
+      }
+    },
+    {
+      "id": "B05_diagnose_network_invalid",
+      "phase": "B",
+      "suite": "group",
+      "query": "Chẩn đoán mạng cho MY-LAPTOP.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "metadata": {
+        "skill": "network_diagnosis_validation",
+        "difficulty": "easy",
+        "what_it_tests": "Phát hiện asset_id không đúng format LT-XXX/DT-XXX và từ chối gọi tool."
+      }
+    }
+  ]
 }

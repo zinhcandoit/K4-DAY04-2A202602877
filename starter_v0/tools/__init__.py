@@ -8,9 +8,11 @@ import yaml
 from .clarify.tool import ask_user
 from .check_service_status.tool import check_service_status
 from .create_ticket.tool import create_ticket
+from .diagnose_network.tool import diagnose_network
 from .format_incident_report.tool import format_incident_report
 from .inspect_device.tool import inspect_device
 from .lookup_user.tool import lookup_user
+from .meeting_room_status.tool import meeting_room_status
 from .policy.tool import search_company_policy
 from .search_kb.tool import search_kb
 from .search_device_info.tool import search_device_info
@@ -31,6 +33,8 @@ TOOL_FUNCTIONS = {
     "format_incident_report": format_incident_report,
     "policy": search_company_policy,
     "create_ticket": create_ticket,
+    "meeting_room_status": meeting_room_status,
+    "diagnose_network": diagnose_network,
 }
 
 
