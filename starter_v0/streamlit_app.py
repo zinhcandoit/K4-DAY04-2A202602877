@@ -11,6 +11,7 @@ import streamlit as st
 from chat import run_model_tool_loop, trim_history
 from env_loader import load_lab_env
 from providers import make_provider
+from run_eval import evaluate_phase_b
 from tools import load_tool_declarations, to_openai_tools
 
 
@@ -121,6 +122,21 @@ def render_tool_event(event: dict[str, Any]) -> None:
         st.json(event.get("args", {}))
         st.caption("Result")
         st.json(result)
+
+
+def evaluate_demo_case(case: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+    if result.get("status") == "provider_error":
+        return {
+            "passed": False,
+            "failure_type": "provider_error",
+            "failures": [result.get("assistant_text", "Provider error")],
+            "actual_tool_calls": [],
+        }
+    actual_calls = [
+        {"name": event.get("tool"), "args": event.get("args", {})}
+        for event in result.get("tool_events", [])
+    ]
+    return evaluate_phase_b(case, actual_calls, result.get("assistant_text"))
 
 
 def save_transcript() -> Path:
@@ -313,11 +329,19 @@ def main() -> None:
                     "suite": selected_suite,
                     "case_id": selected_case_id,
                     "result": demo_result,
+                    "evaluation": evaluate_demo_case(selected_case, demo_result),
                 }
             last_demo_run = st.session_state.get("last_demo_run")
             if last_demo_run and last_demo_run["suite"] == selected_suite and last_demo_run["case_id"] == selected_case_id:
                 demo_result = last_demo_run["result"]
-                st.success(f"Đã chạy {selected_suite} / {selected_case_id}")
+                evaluation = last_demo_run["evaluation"]
+                if evaluation.get("passed"):
+                    st.success(f"PASS · {selected_suite} / {selected_case_id}")
+                else:
+                    st.error(f"FAIL · {selected_suite} / {selected_case_id}")
+                    st.caption(f"Failure type: {evaluation.get('failure_type', 'evaluation_mismatch')}")
+                    for failure in evaluation.get("failures", []):
+                        st.write(f"- {failure}")
                 st.caption(f"Status: {demo_result.get('status', 'unknown')}")
                 st.markdown(demo_result.get("assistant_text") or "Không có câu trả lời từ agent.")
                 if demo_result.get("tool_events"):
